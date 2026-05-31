@@ -48,9 +48,52 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--surface);
+  background: #e2e8f0;
   color: var(--text-1);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Desktop: cap app width and center it like a mobile app */
+.app-header,
+.app-main,
+.bottom-nav,
+.toast {
+  max-width: 480px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.app-header {
+  right: auto;
+  width: 100%;
+}
+
+.bottom-nav {
+  right: auto;
+  width: 100%;
+}
+
+.modal-overlay {
+  background: rgba(15,23,42,0.6);
+}
+
+.modal-sheet {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Mobile: full width, no centering needed */
+@media (max-width: 480px) {
+  .app-header,
+  .app-main,
+  .bottom-nav,
+  .toast {
+    max-width: 100%;
+    left: 0;
+    transform: none;
+  }
+  .app-header { right: 0; width: 100%; }
+  .bottom-nav { right: 0; width: 100%; }
 }
 
 /* ── Header ── */
