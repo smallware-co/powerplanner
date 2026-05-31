@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PowerPlanner</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">PowerPlanner</span>
+      </div>
+      <div class="header-actions">
+        <span class="build-name-badge" id="current-build-name">Untitled Build</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Content Panels -->
+  <main class="app-main" id="app-main">
+
+    <!-- BUILD TAB -->
+    <section class="tab-panel active" id="tab-build">
+      <div class="panel-scroll">
+
+        <!-- Location context bar -->
+        <div class="context-bar">
+          <span class="context-item" id="ctx-sun">☀️ <span id="ctx-sun-val">5.0</span>h sun</span>
+          <span class="context-item" id="ctx-wind">🌬️ <span id="ctx-wind-val">4.0</span>m/s</span>
+          <span class="context-item" id="ctx-rate">💡 ₱<span id="ctx-rate-val">12.00</span>/kWh</span>
+          <button class="context-edit" onclick="App.switchTab('settings')">Edit</button>
+        </div>
+
+        <!-- Monthly bill input -->
+        <div class="section-card">
+          <div class="section-label">Your current electricity bill</div>
+          <div class="bill-input-row">
+            <span class="bill-currency">₱</span>
+            <input type="number" id="monthly-bill" class="bill-input" value="6500" placeholder="0" oninput="App.onBillChange()">
+            <span class="bill-period">/month</span>
+          </div>
+        </div>
+
+        <!-- PRIMARY: Solar -->
+        <div class="source-section" id="section-solar">
+          <div class="source-header solar">
+            <div class="source-title-row">
+              <span class="source-icon">🔆</span>
+              <span class="source-name">Solar Panels</span>
+            </div>
+            <button class="add-btn" onclick="UI.openAddModal('solar')">+ Add</button>
+          </div>
+          <div class="component-list" id="list-solar">
+            <div class="empty-hint">No solar panels added yet.</div>
+          </div>
+        </div>
+
+        <!-- PRIMARY: Wind -->
+        <div class="source-section" id="section-wind">
+          <div class="source-header wind">
+            <div class="source-title-row">
+              <span class="source-icon">🌀</span>
+              <span class="source-name">Wind Turbines</span>
+            </div>
+            <button class="add-btn" onclick="UI.openAddModal('wind')">+ Add</button>
+          </div>
+          <div class="component-list" id="list-wind">
+            <div class="empty-hint">No wind turbines added yet.</div>
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE: More Energy Sources -->
+        <div class="collapsible-section" id="collapse-energy">
+          <button class="collapse-toggle" onclick="UI.toggleCollapse('collapse-energy')">
+            <span>More energy sources</span>
+            <span class="collapse-arrow">▼</span>
+          </button>
+          <div class="collapse-body">
+
+            <div class="source-section" id="section-hydro">
+              <div class="source-header hydro">
+                <div class="source-title-row">
+                  <span class="source-icon">💧</span>
+                  <span class="source-name">Micro-Hydro</span>
+                </div>
+                <button class="add-btn" onclick="UI.openAddModal('hydro')">+ Add</button>
+              </div>
+              <div class="component-list" id="list-hydro">
+                <div class="empty-hint">No hydro sources added yet.</div>
+              </div>
+            </div>
+
+            <div class="source-section" id="section-generator">
+              <div class="source-header generator">
+                <div class="source-title-row">
+                  <span class="source-icon">⚙️</span>
+                  <span class="source-name">Generator</span>
+                </div>
+                <button class="add-btn" onclick="UI.openAddModal('generator')">+ Add</button>
+              </div>
+              <div class="component-list" id="list-generator">
+                <div class="empty-hint">No generators added yet.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- COLLAPSIBLE: Storage & Water -->
+        <div class="collapsible-section" id="collapse-storage">
+          <button class="collapse-toggle" onclick="UI.toggleCollapse('collapse-storage')">
+            <span>Storage & water</span>
+            <span class="collapse-arrow">▼</span>
+          </button>
+          <div class="collapse-body">
+
+            <div class="source-section" id="section-battery">
+              <div class="source-header battery">
+                <div class="source-title-row">
+                  <span class="source-icon">🔋</span>
+                  <span class="source-name">Battery Bank</span>
+                </div>
+                <button class="add-btn" onclick="UI.openAddModal('battery')">+ Add</button>
+              </div>
+              <div class="component-list" id="list-battery">
+                <div class="empty-hint">No batteries added yet.</div>
+              </div>
+            </div>
+
+            <div class="source-section" id="section-water">
+              <div class="source-header water">
+                <div class="source-title-row">
+                  <span class="source-icon">🌧️</span>
+                  <span class="source-name">Rainwater Collection</span>
+                </div>
+                <button class="add-btn" onclick="UI.openAddModal('water')">+ Add</button>
+              </div>
+              <div class="component-list" id="list-water">
+                <div class="empty-hint">No water systems added yet.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="height: 2rem;"></div>
+      </div>
+    </section>
+
+    <!-- RESULTS TAB -->
+    <section class="tab-panel" id="tab-results">
+      <div class="panel-scroll" id="results-content">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <div class="empty-title">No components yet</div>
+          <div class="empty-sub">Add solar panels or wind turbines in the Build tab to see your results.</div>
+          <button class="cta-btn" onclick="App.switchTab('build')">Go to Build →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAVES TAB -->
+    <section class="tab-panel" id="tab-saves">
+      <div class="panel-scroll">
+        <div class="saves-header">
+          <div class="section-label" style="margin:0">Your builds</div>
+          <button class="save-new-btn" onclick="UI.promptSaveBuild()">Save current</button>
+        </div>
+        <div id="saves-list">
+          <div class="empty-state">
+            <div class="empty-icon">💾</div>
+            <div class="empty-title">No saved builds</div>
+            <div class="empty-sub">Save your current build to compare options later.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS TAB -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="panel-scroll">
+        <div class="settings-group">
+          <div class="settings-group-label">Location & environment</div>
+          <div class="settings-row">
+            <label>Peak sun hours/day</label>
+            <input type="number" id="s-sun" value="5.0" step="0.5" min="3" max="7" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Avg wind speed (m/s)</label>
+            <input type="number" id="s-wind" value="4.0" step="0.5" min="0" max="15" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Rainy months/year</label>
+            <input type="number" id="s-rain-months" value="6" step="1" min="1" max="12" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Avg rainfall (mm/month)</label>
+            <input type="number" id="s-rainfall" value="300" step="10" oninput="App.onSettingsChange()">
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-label">Rates</div>
+          <div class="settings-row">
+            <label>Meralco rate (₱/kWh)</label>
+            <input type="number" id="s-rate" value="12.00" step="0.50" min="5" max="20" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Net metering credit (₱/kWh)</label>
+            <input type="number" id="s-netmeter" value="5.50" step="0.25" min="0" max="15" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Water rate (₱/cubic meter)</label>
+            <input type="number" id="s-water-rate" value="35" step="1" oninput="App.onSettingsChange()">
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-label">Projection</div>
+          <div class="settings-row">
+            <label>Projection years</label>
+            <input type="number" id="s-years" value="25" step="1" min="5" max="30" oninput="App.onSettingsChange()">
+          </div>
+          <div class="settings-row">
+            <label>Annual rate increase (%)</label>
+            <input type="number" id="s-rate-increase" value="3" step="0.5" min="0" max="10" oninput="App.onSettingsChange()">
+          </div>
+        </div>
+        <div style="height:2rem;"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-build" onclick="App.switchTab('build')">
+      <span class="nav-icon">🔧</span>
+      <span class="nav-label">Build</span>
+    </button>
+    <button class="nav-item" id="nav-results" onclick="App.switchTab('results')">
+      <span class="nav-icon">📊</span>
+      <span class="nav-label">Results</span>
+    </button>
+    <button class="nav-item" id="nav-saves" onclick="App.switchTab('saves')">
+      <span class="nav-icon">💾</span>
+      <span class="nav-label">Saves</span>
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="App.switchTab('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">Settings</span>
+    </button>
+  </nav>
+
+  <!-- Add/Edit Component Modal -->
+  <div class="modal-overlay" id="modal-overlay" onclick="UI.closeModal(event)">
+    <div class="modal-sheet" id="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Add Component</h2>
+        <button class="modal-close" onclick="UI.closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer">
+        <button class="modal-cancel" onclick="UI.closeModal()">Cancel</button>
+        <button class="modal-save" id="modal-save-btn" onclick="UI.saveModal()">Add to build</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="storage.js"></script>
+  <script src="components/solar.js"></script>
+  <script src="components/wind.js"></script>
+  <script src="components/hydro.js"></script>
+  <script src="components/generator.js"></script>
+  <script src="components/battery.js"></script>
+  <script src="components/water.js"></script>
+  <script src="calculator/energy.js"></script>
+  <script src="calculator/financial.js"></script>
+  <script src="calculator/water-calc.js"></script>
+  <script src="ui/builder.js"></script>
+  <script src="ui/results.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
