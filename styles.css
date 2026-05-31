@@ -929,3 +929,14 @@ html, body {
     transform: translateX(-50%);
   }
 }
+
+/* Fix bottom nav inside shell on desktop */
+@media (min-width: 481px) {
+  #app-shell {
+    display: flex;
+    flex-direction: column;
+  }
+  .bottom-nav {
+    bottom: 0 !important;
+  }
+}
