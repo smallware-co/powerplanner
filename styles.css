@@ -1074,3 +1074,121 @@ html, body {
     to   { opacity: 1; transform: scale(1); }
   }
 }
+/* ─────────────────────────────────────────────────
+   DESKTOP BUILD GRID
+   Desktop-only: flat grid, no collapsibles.
+   Mobile: unchanged (collapsibles stay as-is).
+───────────────────────────────────────────────── */
+
+/* Desktop build grid wrapper — only rendered on desktop */
+.build-grid {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+
+  /* Hide mobile collapsible layout on desktop */
+  .mobile-build-layout {
+    display: none;
+  }
+
+  /* Show desktop grid layout */
+  .build-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  /* Bill + context bar stay full width above grid */
+  .build-grid-header {
+    margin-bottom: 14px;
+  }
+
+  /* Grid cell: each source section fills its cell */
+  .build-grid .source-section {
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .build-grid .component-list {
+    flex: 1;
+  }
+
+  /* Compact tile — saved mode, section has no components */
+  .source-section.compact-tile {
+    min-height: 80px;
+  }
+
+  .source-section.compact-tile .component-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .compact-add-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 24px;
+    cursor: pointer;
+    color: var(--text-3);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    width: 100%;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .compact-add-btn:hover {
+    border-color: var(--navy-mid);
+    color: var(--text-1);
+  }
+
+  .compact-add-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  /* Edit build button in header — desktop only */
+  .edit-build-btn {
+    display: none;
+  }
+}
+
+/* 1440p — 4 columns */
+@media (min-width: 1440px) {
+  .build-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Edit build btn shown only on desktop */
+@media (min-width: 1024px) {
+  .edit-build-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--solar);
+    background: none;
+    border: 1px solid var(--solar);
+    border-radius: 20px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .edit-build-btn:hover {
+    background: rgba(245,158,11,0.08);
+  }
+}

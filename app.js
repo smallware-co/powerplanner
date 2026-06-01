@@ -2,7 +2,7 @@
  * app.js
  *
  * Main app entry point.
- * Handles: tab routing, global state, settings sync, bill change.
+ * Handles: tab routing, global state, settings sync, bill change, build mode.
  * Depends on: all other modules loaded before this in index.html.
  */
 
@@ -11,20 +11,20 @@ const App = (() => {
   // Global state — single source of truth for this session
   const state = {
     currentTab: 'build',
-    buildName: 'Untitled Build',
+    buildName:  'Untitled Build',
+    buildMode:  'editing', // 'editing' | 'saved'
     bill: 6500,
     settings: {
       sunHours:     5.0,
       windSpeed:    4.0,
       rainMonths:   6,
-      rainfall:     300,    // mm/month during rainy season
-      rate:         12.00,  // Meralco ₱/kWh
-      netMeter:     5.50,   // net metering credit ₱/kWh
-      waterRate:    35,     // ₱/cubic meter
+      rainfall:     300,
+      rate:         12.00,
+      netMeter:     5.50,
+      waterRate:    35,
       projYears:    25,
-      rateIncrease: 3,      // % annual Meralco rate increase
+      rateIncrease: 3,
     },
-    // Components: arrays of component objects per type
     components: {
       solar:     [],
       wind:      [],
@@ -37,30 +37,29 @@ const App = (() => {
 
   /**
    * switchTab
-   * Activates a tab by name. Updates nav, shows correct panel.
+   * Activates a tab by name. Updates bottom nav and sidebar nav.
    * @param {string} tab  'build' | 'results' | 'saves' | 'settings'
    */
-function switchTab(tab) {
-  // Deactivate all panels + bottom nav items
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-  document.getElementById(`tab-${tab}`).classList.add('active');
-  document.getElementById(`nav-${tab}`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`nav-${tab}`).classList.add('active');
 
-  // Sync sidebar nav (desktop) — elements may not exist on mobile, guard with ?
-  document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(`snav-${tab}`)?.classList.add('active');
+    // Sidebar nav — guarded with ?. since it doesn't exist on mobile
+    document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`snav-${tab}`)?.classList.add('active');
 
-  state.currentTab = tab;
+    state.currentTab = tab;
 
-  if (tab === 'results') Results.render(state);
-  if (tab === 'saves')   renderSaves();
-}
+    if (tab === 'results') Results.render(state);
+    if (tab === 'saves')   renderSaves();
+  }
 
   /**
    * onBillChange
-   * Called when monthly bill input changes. Updates state and recalculates.
+   * Called when monthly bill input changes. Updates state.
    */
   function onBillChange() {
     const val = parseFloat(document.getElementById('monthly-bill').value) || 0;
@@ -72,14 +71,14 @@ function switchTab(tab) {
    * Reads all settings fields and updates state. Refreshes context bar.
    */
   function onSettingsChange() {
-    state.settings.sunHours     = parseFloat(document.getElementById('s-sun').value)          || 5;
-    state.settings.windSpeed    = parseFloat(document.getElementById('s-wind').value)         || 4;
-    state.settings.rainMonths   = parseInt(document.getElementById('s-rain-months').value)    || 6;
-    state.settings.rainfall     = parseFloat(document.getElementById('s-rainfall').value)     || 300;
-    state.settings.rate         = parseFloat(document.getElementById('s-rate').value)         || 12;
-    state.settings.netMeter     = parseFloat(document.getElementById('s-netmeter').value)     || 5.5;
-    state.settings.waterRate    = parseFloat(document.getElementById('s-water-rate').value)   || 35;
-    state.settings.projYears    = parseInt(document.getElementById('s-years').value)          || 25;
+    state.settings.sunHours     = parseFloat(document.getElementById('s-sun').value)            || 5;
+    state.settings.windSpeed    = parseFloat(document.getElementById('s-wind').value)           || 4;
+    state.settings.rainMonths   = parseInt(document.getElementById('s-rain-months').value)      || 6;
+    state.settings.rainfall     = parseFloat(document.getElementById('s-rainfall').value)       || 300;
+    state.settings.rate         = parseFloat(document.getElementById('s-rate').value)           || 12;
+    state.settings.netMeter     = parseFloat(document.getElementById('s-netmeter').value)       || 5.5;
+    state.settings.waterRate    = parseFloat(document.getElementById('s-water-rate').value)     || 35;
+    state.settings.projYears    = parseInt(document.getElementById('s-years').value)            || 25;
     state.settings.rateIncrease = parseFloat(document.getElementById('s-rate-increase').value) || 3;
 
     syncContextBar();
@@ -96,6 +95,29 @@ function switchTab(tab) {
   }
 
   /**
+   * setBuildMode
+   * Switches between editing and saved build modes.
+   * editing: all grid sections show empty hints and Add buttons
+   * saved: empty sections collapse to compact + tiles
+   * @param {string} mode  'editing' | 'saved'
+   */
+  function setBuildMode(mode) {
+    state.buildMode = mode;
+    const editBtn = document.getElementById('edit-build-btn');
+
+    if (mode === 'saved') {
+      if (editBtn) editBtn.style.display = 'inline-flex';
+    } else {
+      if (editBtn) editBtn.style.display = 'none';
+    }
+
+    // Re-render all desktop grid lists with new mode
+    Object.keys(state.components).forEach(type => {
+      Builder.renderGridList(type, state.components[type], state.settings, mode);
+    });
+  }
+
+  /**
    * getState
    * Exposes state to other modules.
    * @return {object} current state
@@ -105,6 +127,7 @@ function switchTab(tab) {
   /**
    * addComponent
    * Adds a component object to the correct type array.
+   * Syncs both mobile list and desktop grid list.
    * @param {string} type  Component type key
    * @param {object} comp  Component data object
    */
@@ -112,18 +135,21 @@ function switchTab(tab) {
     comp.id = Date.now() + Math.random();
     state.components[type].push(comp);
     Builder.renderList(type, state.components[type], state.settings);
+    Builder.renderGridList(type, state.components[type], state.settings, state.buildMode);
     showToast(`${comp.name} added`);
   }
 
   /**
    * removeComponent
    * Removes a component by id.
+   * Syncs both mobile list and desktop grid list.
    * @param {string} type  Component type key
    * @param {number} id    Component id
    */
   function removeComponent(type, id) {
     state.components[type] = state.components[type].filter(c => c.id !== id);
     Builder.renderList(type, state.components[type], state.settings);
+    Builder.renderGridList(type, state.components[type], state.settings, state.buildMode);
     showToast('Component removed');
   }
 
@@ -179,40 +205,44 @@ function switchTab(tab) {
   /**
    * loadSave
    * Loads a saved build into state and re-renders all component lists.
+   * Auto-switches to saved mode after load.
    * @param {string} key  Storage key
    */
   function loadSave(key) {
     const saved = Storage.load(key);
     if (!saved) return;
-    state.bill = saved.bill;
+
+    state.bill      = saved.bill;
     state.buildName = saved.name;
-    state.settings = { ...state.settings, ...saved.settings };
+    state.settings  = { ...state.settings, ...saved.settings };
     state.components = saved.components;
 
-    // Sync UI fields
-    document.getElementById('monthly-bill').value = state.bill;
-    document.getElementById('s-sun').value         = state.settings.sunHours;
-    document.getElementById('s-wind').value        = state.settings.windSpeed;
-    document.getElementById('s-rain-months').value = state.settings.rainMonths;
-    document.getElementById('s-rainfall').value    = state.settings.rainfall;
-    document.getElementById('s-rate').value        = state.settings.rate;
-    document.getElementById('s-netmeter').value    = state.settings.netMeter;
-    document.getElementById('s-water-rate').value  = state.settings.waterRate;
-    document.getElementById('s-years').value       = state.settings.projYears;
-    document.getElementById('s-rate-increase').value = state.settings.rateIncrease;
+    // Sync all settings fields
+    document.getElementById('monthly-bill').value     = state.bill;
+    document.getElementById('s-sun').value            = state.settings.sunHours;
+    document.getElementById('s-wind').value           = state.settings.windSpeed;
+    document.getElementById('s-rain-months').value    = state.settings.rainMonths;
+    document.getElementById('s-rainfall').value       = state.settings.rainfall;
+    document.getElementById('s-rate').value           = state.settings.rate;
+    document.getElementById('s-netmeter').value       = state.settings.netMeter;
+    document.getElementById('s-water-rate').value     = state.settings.waterRate;
+    document.getElementById('s-years').value          = state.settings.projYears;
+    document.getElementById('s-rate-increase').value  = state.settings.rateIncrease;
 
+    // Sync build name in header and sidebar
     document.getElementById('current-build-name').textContent = state.buildName;
-    // Sync sidebar build name badge (desktop)
     const sidebarBadge = document.getElementById('sidebar-build-name');
     if (sidebarBadge) sidebarBadge.textContent = state.buildName;
+
     syncContextBar();
 
-    // Re-render all component lists
+    // Re-render all component lists (mobile + desktop grid)
     Object.keys(state.components).forEach(type => {
       Builder.renderList(type, state.components[type], state.settings);
     });
 
     switchTab('build');
+    setBuildMode('saved'); // auto-switch — uses internal ref, not App.setBuildMode
     showToast(`"${saved.name}" loaded`);
   }
 
@@ -230,7 +260,18 @@ function switchTab(tab) {
   // Init
   syncContextBar();
 
-  return { switchTab, onBillChange, onSettingsChange, getState, addComponent, removeComponent, showToast, loadSave, deleteSave };
+  return {
+    switchTab,
+    onBillChange,
+    onSettingsChange,
+    getState,
+    addComponent,
+    removeComponent,
+    showToast,
+    loadSave,
+    deleteSave,
+    setBuildMode,
+  };
 
 })();
 
