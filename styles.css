@@ -53,8 +53,6 @@ html, body {
 }
 
 #app-shell {
-  max-width: 720px;
-  margin: 0 auto;
   min-height: 100vh;
   position: relative;
   background: var(--surface);
@@ -881,15 +879,198 @@ html, body {
 .text-amber { color: var(--solar); }
 .text-red   { color: #ef4444; }
 
-/* ── Responsive: wider layouts on desktop ── */
-@media (min-width: 600px) {
+/* ─────────────────────────────────────────────────
+   DESKTOP LAYOUT — sidebar + content column
+   Breakpoint: 1024px+
+   Hard cap: nothing grows beyond 1920px wide total
+───────────────────────────────────────────────── */
+
+/* Sidebar — hidden by default (mobile-first) */
+.sidebar {
+  display: none;
+}
+
+/* Build badge in header — always visible on mobile */
+.mobile-only {
+  display: flex;
+}
+
+@media (min-width: 1024px) {
+
+  /* ── Root layout: sidebar left, content right ── */
+  #app-shell {
+    display: flex;
+    flex-direction: row;
+    max-width: 1920px;
+    margin: 0 auto;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    min-width: 220px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background: var(--navy);
+    border-right: 1px solid var(--navy-light);
+    z-index: 50;
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--navy-light);
+  }
+
+  .sidebar-logo .logo-icon { font-size: 22px; }
+
+  .sidebar-logo .logo-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 10px;
+    flex: 1;
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .sidebar-nav-item:hover {
+    background: var(--navy-light);
+    color: #ffffff;
+  }
+
+  .sidebar-nav-item.active {
+    background: var(--navy-light);
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .sidebar-nav-item.active .snav-icon {
+    filter: saturate(1.5) brightness(1.2);
+  }
+
+  .snav-icon { font-size: 18px; line-height: 1; }
+  .snav-label { line-height: 1; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--navy-light);
+  }
+
+  .sidebar-build-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-build-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Main column ── */
+  .main-column {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    /* Content readable width cap — nothing grows beyond this */
+    max-width: calc(1920px - 220px);
+  }
+
+  /* ── Header on desktop: no logo (sidebar has it) ── */
+  .mobile-only {
+    display: none;
+  }
+
+  .app-header {
+    /* Still sticky at top of main-column */
+    position: sticky;
+    top: 0;
+  }
+
+  /* ── Content area: cap readable width, center within column ── */
+  .panel-scroll {
+    max-width: 860px;
+    /* No centering — left-aligned to sidebar, natural content flow */
+  }
+
+  /* ── Bottom nav: hidden on desktop ── */
+  .bottom-nav {
+    display: none;
+  }
+
+  /* ── Content height: no bottom nav offset needed ── */
+  .app-main {
+    min-height: calc(100vh - var(--header-h));
+  }
+
+  /* ── Results grid: 4-col on desktop ── */
   .results-grid {
     grid-template-columns: repeat(4, 1fr);
   }
-  .form-row {
-    grid-template-columns: 1fr 1fr 1fr;
+
+  /* ── Settings: wider input fields on desktop ── */
+  .settings-row input {
+    width: 120px;
   }
-  .source-section {
-    margin-bottom: 14px;
+
+  /* ── Toast: account for no bottom nav ── */
+  .toast {
+    bottom: 24px;
+  }
+
+  /* ── Modal: centered dialog on desktop, not bottom sheet ── */
+  .modal-overlay {
+    align-items: center;
+  }
+
+  .modal-sheet {
+    width: 480px;
+    max-width: 480px;
+    border-radius: var(--radius-xl);
+    max-height: 85vh;
+    animation: fadeScaleIn 0.2s ease;
+  }
+
+  @keyframes fadeScaleIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
   }
 }

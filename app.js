@@ -40,19 +40,23 @@ const App = (() => {
    * Activates a tab by name. Updates nav, shows correct panel.
    * @param {string} tab  'build' | 'results' | 'saves' | 'settings'
    */
-  function switchTab(tab) {
-    // Deactivate all panels + nav items
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+function switchTab(tab) {
+  // Deactivate all panels + bottom nav items
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    document.getElementById(`nav-${tab}`).classList.add('active');
-    state.currentTab = tab;
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`nav-${tab}`).classList.add('active');
 
-    // Refresh results when switching to that tab
-    if (tab === 'results') Results.render(state);
-    if (tab === 'saves')   renderSaves();
-  }
+  // Sync sidebar nav (desktop) — elements may not exist on mobile, guard with ?
+  document.querySelectorAll('.sidebar-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`snav-${tab}`)?.classList.add('active');
+
+  state.currentTab = tab;
+
+  if (tab === 'results') Results.render(state);
+  if (tab === 'saves')   renderSaves();
+}
 
   /**
    * onBillChange
@@ -198,6 +202,9 @@ const App = (() => {
     document.getElementById('s-rate-increase').value = state.settings.rateIncrease;
 
     document.getElementById('current-build-name').textContent = state.buildName;
+    // Sync sidebar build name badge (desktop)
+    const sidebarBadge = document.getElementById('sidebar-build-name');
+    if (sidebarBadge) sidebarBadge.textContent = state.buildName;
     syncContextBar();
 
     // Re-render all component lists
