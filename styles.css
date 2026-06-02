@@ -1054,6 +1054,11 @@ html, body {
 
 @media (min-width: 1024px) {
 
+  .content-inner {
+  max-width: 1200px;
+  padding: 0;
+ }
+
   .mobile-build-layout { display: none; }
 
   .build-grid {
