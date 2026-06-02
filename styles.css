@@ -880,9 +880,9 @@ html, body {
 .text-red   { color: #ef4444; }
 
 /* ─────────────────────────────────────────────────
-   DESKTOP LAYOUT — sidebar + content column
-   Breakpoint: 1024px+
-   Hard cap: nothing grows beyond 1920px wide total
+DESKTOP LAYOUT — sidebar + content column
+Breakpoint: 1024px+
+Hard cap: nothing grows beyond 1920px wide total
 ───────────────────────────────────────────────── */
 
 /* Sidebar — hidden by default (mobile-first) */
@@ -901,7 +901,7 @@ html, body {
   #app-shell {
     display: flex;
     flex-direction: row;
-    max-width: 1920px;
+    max-width: 100%;
     margin: 0 auto;
   }
 
@@ -1075,9 +1075,9 @@ html, body {
   }
 }
 /* ─────────────────────────────────────────────────
-   DESKTOP BUILD GRID
-   Desktop-only: flat grid, no collapsibles.
-   Mobile: unchanged (collapsibles stay as-is).
+DESKTOP BUILD GRID
+Desktop-only: flat grid, no collapsible divs.
+Mobile: unchanged (collapsible divs stay as-is).
 ───────────────────────────────────────────────── */
 
 /* Desktop build grid wrapper — only rendered on desktop */
