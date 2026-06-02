@@ -20,27 +20,26 @@
   --text-2:     #475569;
   --text-3:     #94a3b8;
 
-  /* Source accent colors */
-  --solar:      #f59e0b;
-  --solar-bg:   #fffbeb;
-  --wind:       #06b6d4;
-  --wind-bg:    #ecfeff;
-  --hydro:      #3b82f6;
-  --hydro-bg:   #eff6ff;
-  --generator:  #8b5cf6;
+  --solar:        #f59e0b;
+  --solar-bg:     #fffbeb;
+  --wind:         #06b6d4;
+  --wind-bg:      #ecfeff;
+  --hydro:        #3b82f6;
+  --hydro-bg:     #eff6ff;
+  --generator:    #8b5cf6;
   --generator-bg: #f5f3ff;
-  --battery:    #10b981;
-  --battery-bg: #ecfdf5;
-  --water:      #0ea5e9;
-  --water-bg:   #f0f9ff;
+  --battery:      #10b981;
+  --battery-bg:   #ecfdf5;
+  --water:        #0ea5e9;
+  --water-bg:     #f0f9ff;
 
   --radius-sm:  8px;
   --radius-md:  12px;
   --radius-lg:  16px;
   --radius-xl:  20px;
 
-  --nav-h:      64px;
-  --header-h:   56px;
+  --nav-h:       64px;
+  --header-h:    56px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -57,8 +56,6 @@ html, body {
   position: relative;
   background: var(--surface);
 }
-
-
 
 /* ── Header ── */
 .app-header {
@@ -110,13 +107,8 @@ html, body {
   min-height: calc(100vh - var(--header-h) - var(--nav-h));
 }
 
-.tab-panel {
-  display: none;
-}
-
-.tab-panel.active {
-  display: block;
-}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
 .panel-scroll {
   padding: 1rem;
@@ -215,27 +207,36 @@ html, body {
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+  gap: 8px; /* prevent header content squishing */
 }
 
-.source-header.solar  { background: var(--solar-bg); }
-.source-header.wind   { background: var(--wind-bg); }
-.source-header.hydro  { background: var(--hydro-bg); }
-.source-header.generator { background: var(--generator-bg); }
-.source-header.battery { background: var(--battery-bg); }
-.source-header.water  { background: var(--water-bg); }
+.source-header.solar      { background: var(--solar-bg); }
+.source-header.wind       { background: var(--wind-bg); }
+.source-header.hydro      { background: var(--hydro-bg); }
+.source-header.generator  { background: var(--generator-bg); }
+.source-header.battery    { background: var(--battery-bg); }
+.source-header.water      { background: var(--water-bg); }
 
 .source-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0; /* allow flex child to shrink properly */
+  flex: 1;
 }
 
-.source-icon { font-size: 18px; }
+.source-icon {
+  font-size: 18px;
+  flex-shrink: 0; /* icon never shrinks */
+}
 
 .source-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-1);
+  white-space: nowrap; /* never wraps — fixes the two-line bug */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .add-btn {
@@ -248,6 +249,8 @@ html, body {
   padding: 5px 12px;
   cursor: pointer;
   transition: background 0.15s;
+  flex-shrink: 0; /* Add button never wraps or shrinks */
+  white-space: nowrap;
 }
 
 .add-btn:active { background: var(--border); }
@@ -397,7 +400,6 @@ html, body {
 }
 
 .nav-item:active { background: var(--surface); }
-
 .nav-icon { font-size: 20px; line-height: 1; }
 
 .nav-label {
@@ -408,8 +410,7 @@ html, body {
 }
 
 .nav-item.active .nav-label { color: var(--navy); font-weight: 700; }
-
-.nav-item.active .nav-icon { filter: saturate(1.5); }
+.nav-item.active .nav-icon  { filter: saturate(1.5); }
 
 /* ── Results Tab ── */
 .results-hero {
@@ -494,8 +495,6 @@ html, body {
 /* Generation bar chart */
 .gen-bar-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 
-.gen-bar-item {}
-
 .gen-bar-meta {
   display: flex;
   justify-content: space-between;
@@ -539,9 +538,9 @@ html, body {
 
 .proj-row:last-child { border-bottom: none; }
 .proj-row.header { background: var(--surface); font-weight: 700; font-size: 11px; color: var(--text-3); text-transform: uppercase; }
-.proj-year { width: 40px; font-weight: 600; color: var(--text-2); }
-.proj-gen  { flex: 1; color: var(--text-1); }
-.proj-save { flex: 1; color: #10b981; font-weight: 600; }
+.proj-year  { width: 40px; font-weight: 600; color: var(--text-2); }
+.proj-gen   { flex: 1; color: var(--text-1); }
+.proj-save  { flex: 1; color: #10b981; font-weight: 600; }
 .proj-cumul { flex: 1; text-align: right; font-weight: 700; color: var(--text-1); }
 .proj-row.payback-row { background: #ecfdf5; }
 
@@ -680,11 +679,6 @@ html, body {
   justify-content: center;
 }
 
-.modal-sheet {
-  width: 100%;
-  max-width: 720px;
-}
-
 .modal-overlay.open { display: flex; }
 
 .modal-sheet {
@@ -773,9 +767,7 @@ html, body {
 }
 
 /* Modal form fields */
-.form-field {
-  margin-bottom: 14px;
-}
+.form-field { margin-bottom: 14px; }
 
 .form-field label {
   display: block;
@@ -818,7 +810,7 @@ html, body {
   text-align: center;
 }
 
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-icon  { font-size: 48px; margin-bottom: 12px; }
 
 .empty-title {
   font-size: 17px;
@@ -880,28 +872,20 @@ html, body {
 .text-red   { color: #ef4444; }
 
 /* ─────────────────────────────────────────────────
-DESKTOP LAYOUT — sidebar + content column
-Breakpoint: 1024px+
-Hard cap: nothing grows beyond 1920px wide total
+   DESKTOP LAYOUT — sidebar + content column
+   Breakpoint: 1024px+
+   Hard cap: nothing grows beyond 1920px wide total
 ───────────────────────────────────────────────── */
 
-/* Sidebar — hidden by default (mobile-first) */
-.sidebar {
-  display: none;
-}
-
-/* Build badge in header — always visible on mobile */
-.mobile-only {
-  display: flex;
-}
+.sidebar   { display: none; }
+.mobile-only { display: flex; }
 
 @media (min-width: 1024px) {
 
-  /* ── Root layout: sidebar left, content right ── */
   #app-shell {
     display: flex;
     flex-direction: row;
-    max-width: 100%;
+    max-width: 1920px;
     margin: 0 auto;
   }
 
@@ -978,7 +962,7 @@ Hard cap: nothing grows beyond 1920px wide total
     filter: saturate(1.5) brightness(1.2);
   }
 
-  .snav-icon { font-size: 18px; line-height: 1; }
+  .snav-icon  { font-size: 18px; line-height: 1; }
   .snav-label { line-height: 1; }
 
   .sidebar-footer {
@@ -1004,59 +988,45 @@ Hard cap: nothing grows beyond 1920px wide total
     text-overflow: ellipsis;
   }
 
-  /* ── Main column ── */
+  /* ── Main column — fills all remaining width, no cap ── */
   .main-column {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    /* Content readable width cap — nothing grows beyond this */
-    max-width: calc(1920px - 220px);
   }
 
-  /* ── Header on desktop: no logo (sidebar has it) ── */
-  .mobile-only {
-    display: none;
-  }
+  .mobile-only { display: none; }
 
   .app-header {
-    /* Still sticky at top of main-column */
     position: sticky;
     top: 0;
   }
 
-  /* ── Content area: cap readable width, center within column ── */
+  /* panel-scroll fills full column width — grid handles layout */
   .panel-scroll {
-    max-width: 860px;
-    /* No centering — left-aligned to sidebar, natural content flow */
+    padding: 1.25rem;
   }
 
-  /* ── Bottom nav: hidden on desktop ── */
-  .bottom-nav {
-    display: none;
-  }
+  .bottom-nav { display: none; }
 
-  /* ── Content height: no bottom nav offset needed ── */
   .app-main {
     min-height: calc(100vh - var(--header-h));
   }
 
-  /* ── Results grid: 4-col on desktop ── */
   .results-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* ── Settings: wider input fields on desktop ── */
   .settings-row input {
     width: 120px;
   }
 
-  /* ── Toast: account for no bottom nav ── */
   .toast {
     bottom: 24px;
   }
 
-  /* ── Modal: centered dialog on desktop, not bottom sheet ── */
+  /* Modal: centered dialog on desktop, not bottom sheet */
   .modal-overlay {
     align-items: center;
   }
@@ -1074,25 +1044,19 @@ Hard cap: nothing grows beyond 1920px wide total
     to   { opacity: 1; transform: scale(1); }
   }
 }
+
 /* ─────────────────────────────────────────────────
-DESKTOP BUILD GRID
-Desktop-only: flat grid, no collapsible divs.
-Mobile: unchanged (collapsible divs stay as-is).
+   DESKTOP BUILD GRID
+   Desktop-only: flat grid, no collapsibles.
+   Mobile: unchanged (collapsibles stay as-is).
 ───────────────────────────────────────────────── */
 
-/* Desktop build grid wrapper — only rendered on desktop */
-.build-grid {
-  display: none;
-}
+.build-grid { display: none; }
 
 @media (min-width: 1024px) {
 
-  /* Hide mobile collapsible layout on desktop */
-  .mobile-build-layout {
-    display: none;
-  }
+  .mobile-build-layout { display: none; }
 
-  /* Show desktop grid layout */
   .build-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1100,12 +1064,10 @@ Mobile: unchanged (collapsible divs stay as-is).
     margin-bottom: 14px;
   }
 
-  /* Bill + context bar stay full width above grid */
   .build-grid-header {
     margin-bottom: 14px;
   }
 
-  /* Grid cell: each source section fills its cell */
   .build-grid .source-section {
     margin-bottom: 0;
     height: 100%;
@@ -1117,7 +1079,6 @@ Mobile: unchanged (collapsible divs stay as-is).
     flex: 1;
   }
 
-  /* Compact tile — saved mode, section has no components */
   .source-section.compact-tile {
     min-height: 80px;
   }
@@ -1157,21 +1118,7 @@ Mobile: unchanged (collapsible divs stay as-is).
     line-height: 1;
   }
 
-  /* Edit build button in header — desktop only */
-  .edit-build-btn {
-    display: none;
-  }
-}
-
-/* 1440p — 4 columns */
-@media (min-width: 1440px) {
-  .build-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Edit build btn shown only on desktop */
-@media (min-width: 1024px) {
+  /* Edit build button — hidden by default, shown in saved mode via JS */
   .edit-build-btn {
     display: inline-flex;
     align-items: center;
@@ -1190,5 +1137,12 @@ Mobile: unchanged (collapsible divs stay as-is).
 
   .edit-build-btn:hover {
     background: rgba(245,158,11,0.08);
+  }
+}
+
+/* 1440p — 4 columns */
+@media (min-width: 1440px) {
+  .build-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
