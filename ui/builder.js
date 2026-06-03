@@ -9,6 +9,16 @@
 
 const Builder = (() => {
 
+  // Empty state icons per type
+const EMPTY_ICONS = {
+  solar:     '🔆',
+  wind:      '🌀',
+  hydro:     '💧',
+  generator: '⚙️',
+  battery:   '🔋',
+  water:     '🌧️',
+};
+
   // Map type string to component definition module
   const COMPONENTS = {
     solar:     SolarComponent,
@@ -78,7 +88,11 @@ const Builder = (() => {
     if (!el) return;
 
     if (!comps.length) {
-      el.innerHTML = `<div class="empty-hint">No ${COMPONENTS[type].label.toLowerCase()} added yet.</div>`;
+      el.innerHTML = `<div class="empty-hint">
+  <span class="empty-hint-icon">${EMPTY_ICONS[type] || '➕'}</span>
+  <span class="empty-hint-text">No ${COMPONENTS[type].label.toLowerCase()} added yet.</span>
+  <button class="empty-hint-action" onclick="UI.openAddModal('${type}')">+ Add one</button>
+</div>`;
       return;
     }
 
@@ -107,14 +121,18 @@ const Builder = (() => {
       if (mode === 'saved') {
         // Compact tile: dashed + button, no empty hint text
         section.classList.add('compact-tile');
-        el.innerHTML = `<button class="compact-add-btn" onclick="UI.openAddModal('${type}')">
-          <span class="compact-add-icon">＋</span>
-          <span>Add ${def.label}</span>
-        </button>`;
+        el.innerHTML = `<div class="empty-hint">
+  <span class="empty-hint-icon">${EMPTY_ICONS[type] || '➕'}</span>
+  <span class="empty-hint-text">No ${COMPONENTS[type].label.toLowerCase()} added yet.</span>
+  <button class="empty-hint-action" onclick="UI.openAddModal('${type}')">+ Add one</button>
+</div>`;
       } else {
         // Editing mode: normal empty hint
         section.classList.remove('compact-tile');
-        el.innerHTML = `<div class="empty-hint">No ${def.label.toLowerCase()} added yet.</div>`;
+        el.innerHTML = `<div class="empty-hint">
+  <span class="empty-hint-icon">${EMPTY_ICONS[type] || '➕'}</span>
+  <span class="empty-hint-text">No ${COMPONENTS[type].label.toLowerCase()} added yet.</span>
+</div>`;
       }
       return;
     }
