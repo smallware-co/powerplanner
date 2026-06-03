@@ -151,24 +151,24 @@ const EMPTY_ICONS = {
    * @param  {object} settings  Global settings
    * @return {string} HTML string
    */
-  function _cardHTML(type, comp, settings) {
-    const def     = COMPONENTS[type];
-    const kwhInfo = getKwhDisplay(type, comp, settings);
+function _cardHTML(type, comp, settings) {
+  const def     = COMPONENTS[type];
+  const kwhInfo = getKwhDisplay(type, comp, settings);
 
-    return `<div class="component-card">
-      <div class="comp-info">
-        <div class="comp-name">${comp.name}</div>
-        <div class="comp-meta">${def.metaLine(comp)}</div>
-      </div>
-      ${kwhInfo ? `<div>
-        <div class="comp-kwh">${kwhInfo.value}</div>
-        <div class="comp-kwh-label">${kwhInfo.label}</div>
-      </div>` : ''}
-      <div class="comp-actions">
-        <button class="comp-btn delete" onclick="App.removeComponent('${type}', ${comp.id})" title="Remove">✕</button>
-      </div>
-    </div>`;
-  }
+  return `<div class="component-card">
+    <div class="comp-info">
+      <div class="comp-name">${comp.name}</div>
+      <div class="comp-meta">${def.metaLine(comp)}</div>
+    </div>
+    ${kwhInfo ? `<div class="comp-stat">
+      <div class="comp-kwh">${kwhInfo.value}</div>
+      <div class="comp-kwh-label">${kwhInfo.label}</div>
+    </div>` : ''}
+    <div class="comp-actions">
+      <button class="comp-btn delete" onclick="App.removeComponent('${type}', ${comp.id})" title="Remove">✕</button>
+    </div>
+  </div>`;
+}
 
   /**
    * getKwhDisplay
