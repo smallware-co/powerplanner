@@ -9,17 +9,15 @@
 
 const Builder = (() => {
 
-  // Empty state icons per type
-const EMPTY_ICONS = {
-  solar:     '🔆',
-  wind:      '🌀',
-  hydro:     '💧',
-  generator: '⚙️',
-  battery:   '🔋',
-  water:     '🌧️',
-};
+  const EMPTY_ICONS = {
+    solar:     '🔆',
+    wind:      '🌀',
+    hydro:     '💧',
+    generator: '⚙️',
+    battery:   '🔋',
+    water:     '🌧️',
+  };
 
-  // Map type string to component definition module
   const COMPONENTS = {
     solar:     SolarComponent,
     wind:      WindComponent,
@@ -29,7 +27,6 @@ const EMPTY_ICONS = {
     water:     WaterComponent,
   };
 
-  // Tracks what the open modal is adding
   let _activeType = null;
   let _editId     = null;
 
@@ -76,6 +73,56 @@ const EMPTY_ICONS = {
   }
 
   /**
+   * fillDefaults
+   * Fills the open modal's form fields with the active component's DEFAULTS.
+   * Triggered by the "Use typical values" button present in every formHTML.
+   */
+  function fillDefaults() {
+    if (!_activeType) return;
+    const defaults = COMPONENTS[_activeType].defaults;
+    if (!defaults) return;
+
+    // Map field IDs to default keys — only fills fields that exist in the current form
+    const fieldMap = {
+      'f-name':       defaults.name,
+      'f-qty':        defaults.qty,
+      'f-watts':      defaults.watts,
+      'f-unit-cost':  defaults.unitCost,
+      'f-efficiency': defaults.efficiency,
+      'f-inverter':   defaults.inverterCost,
+      'f-install':    defaults.installCost,
+      'f-capacity':   defaults.capacityKwh,
+      'f-dod':        defaults.dod,
+      'f-cycles':     defaults.cycleLife,
+      'f-area':       defaults.catchArea,
+      'f-tank':       defaults.tankLiters,
+      'f-filter':     defaults.filterCost,
+      'f-head':       defaults.headHeight,
+      'f-hours':      defaults.dailyHours,
+      'f-fuel':       defaults.fuelPerHr,
+      'f-fuel-cost':  defaults.fuelCost,
+      'f-days':       defaults.daysPerMonth,
+      'f-wind-speed': defaults.windSpeed,
+      'f-controller': defaults.controllerCost,
+    };
+
+    Object.entries(fieldMap).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el && value !== undefined) el.value = value;
+    });
+
+    // Selects need explicit value assignment
+    const battType = document.getElementById('f-batt-type');
+    if (battType && defaults.battType) battType.value = defaults.battType;
+
+    const turbineType = document.getElementById('f-turbine-type');
+    if (turbineType && defaults.turbineType) turbineType.value = defaults.turbineType;
+
+    const useFor = document.getElementById('f-use');
+    if (useFor && defaults.useFor) useFor.value = defaults.useFor;
+  }
+
+  /**
    * renderList
    * Re-renders the mobile component list for a given type.
    * Called after add or remove. Targets list-{type} IDs.
@@ -119,7 +166,6 @@ const EMPTY_ICONS = {
 
     if (!comps.length) {
       if (mode === 'saved') {
-        // Compact tile: dashed + button, no empty hint text
         section.classList.add('compact-tile');
         el.innerHTML = `<div class="empty-hint">
   <span class="empty-hint-icon">${EMPTY_ICONS[type] || '➕'}</span>
@@ -127,7 +173,6 @@ const EMPTY_ICONS = {
   <button class="empty-hint-action" onclick="UI.openAddModal('${type}')">+ Add one</button>
 </div>`;
       } else {
-        // Editing mode: normal empty hint
         section.classList.remove('compact-tile');
         el.innerHTML = `<div class="empty-hint">
   <span class="empty-hint-icon">${EMPTY_ICONS[type] || '➕'}</span>
@@ -137,7 +182,6 @@ const EMPTY_ICONS = {
       return;
     }
 
-    // Has components — always show full card list regardless of mode
     section.classList.remove('compact-tile');
     el.innerHTML = comps.map(comp => _cardHTML(type, comp, settings)).join('');
   }
@@ -151,11 +195,11 @@ const EMPTY_ICONS = {
    * @param  {object} settings  Global settings
    * @return {string} HTML string
    */
-function _cardHTML(type, comp, settings) {
-  const def     = COMPONENTS[type];
-  const kwhInfo = getKwhDisplay(type, comp, settings);
+  function _cardHTML(type, comp, settings) {
+    const def     = COMPONENTS[type];
+    const kwhInfo = getKwhDisplay(type, comp, settings);
 
-  return `<div class="component-card">
+    return `<div class="component-card">
     <div class="comp-info">
       <div class="comp-name">${comp.name}</div>
       <div class="comp-meta">${def.metaLine(comp)}</div>
@@ -168,7 +212,7 @@ function _cardHTML(type, comp, settings) {
       <button class="comp-btn delete" onclick="App.removeComponent('${type}', ${comp.id})" title="Remove">✕</button>
     </div>
   </div>`;
-}
+  }
 
   /**
    * getKwhDisplay
@@ -228,7 +272,6 @@ function _cardHTML(type, comp, settings) {
     const state = App.getState();
     state.buildName = name;
 
-    // Sync build name in header and sidebar
     document.getElementById('current-build-name').textContent = name;
     const sidebarBadge = document.getElementById('sidebar-build-name');
     if (sidebarBadge) sidebarBadge.textContent = name;
@@ -236,7 +279,6 @@ function _cardHTML(type, comp, settings) {
     Storage.save(name, state);
     App.showToast(`"${name}" saved`);
 
-    // Auto-switch to saved mode after saving
     App.setBuildMode('saved');
   }
 
@@ -244,6 +286,7 @@ function _cardHTML(type, comp, settings) {
     openAddModal,
     closeModal,
     saveModal,
+    fillDefaults,
     renderList,
     renderGridList,
     toggleCollapse,
